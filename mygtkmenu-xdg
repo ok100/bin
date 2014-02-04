@@ -1,0 +1,115 @@
+#!/usr/bin/env python2
+# Dependencies: mygtkmenu, python2-xdg
+
+import os
+from collections import OrderedDict
+from tempfile import gettempdir
+
+from xdg.BaseDirectory import xdg_data_dirs
+from xdg.DesktopEntry import DesktopEntry
+from xdg.IconTheme import getIconPath
+
+
+# Configuration
+terminal_cmd = 'urxvt -e'
+exit_cmd = 'dmenu-powerbutton'
+use_icons = False
+blacklist = [
+    'Avahi SSH Server Browser',
+    'Avahi VNC Server Browser',
+    'Avahi Zeroconf Browser',
+    'Connect to Server',
+    'Desktop Icons',
+    'LibreOffice XSLT based filters',
+    'LibreOffice',
+    'MPlayer Media Player',
+    'Manage Printing',
+    'Print Preview',
+    'Qt V4L2 test Utility',
+    'Run Software',
+    'compton',
+    'feh',
+    'mpv Media Player',
+    'sxiv',
+    'urxvt (client)',
+    'urxvt (tabbed)',
+    'vitetris',
+]
+
+
+class MenuEntry(object):
+    groups = {
+        'AudioVideo': 'Audio & Video',
+        'Audio': 'Audio & Video',
+        'Video': 'Audio & Video',
+        'Development': 'Development',
+        'Education': 'Education',
+        'Game': 'Games',
+        'Graphics': 'Graphics',
+        'Network': 'Network',
+        'Office': 'Office',
+        'Science': 'Science',
+        'Settings': 'Settings',
+        'System': 'System',
+        'Utility': 'Accessories'
+    }
+
+    def __init__(self, file):
+        de = DesktopEntry(file)
+        for c in de.getCategories():
+            if c in self.groups:
+                self.category = self.groups[c]
+                break
+        else:
+            self.category = 'Other'
+        self.name = de.getName()
+        self.icon = (getIconPath(de.getIcon()) if use_icons else 'NULL') or 'NULL'
+        self.executable = de.getExec().split()[0]
+        if de.getTerminal():
+            self.executable = terminal_cmd + ' ' + self.executable
+
+    def __str__(self):
+        return '\titem = %s\n\tcmd = %s\n\ticon = %s\n' % (self.name, self.executable, self.icon)
+
+
+class Menu(object):
+    tmpfile = os.path.join(gettempdir(), 'mygtkmenu.txt')
+    menu = OrderedDict()
+
+    def __str__(self):
+        menu = ''
+        for cat in sorted(self.menu):
+            menu += 'submenu = %s\n\ticon = NULL\n' % cat
+            for entry in sorted(self.menu[cat], key=lambda e: e.name.lower()):
+                menu += str(entry)
+        menu += 'SEPARATOR\nitem = Exit\ncmd = %s\nicon = NULL' % exit_cmd
+        return menu
+
+    def add(self, entry):
+        if entry.category not in self.menu:
+            self.menu[entry.category] = []
+        self.menu[entry.category].append(entry)
+
+    def show(self):
+        with open(self.tmpfile, 'w') as f:
+            f.write(str(self))
+        os.system('mygtkmenu ' + self.tmpfile)
+        os.remove(self.tmpfile)
+
+
+desktop_files = []
+for dir in xdg_data_dirs:
+    desktop_dir = os.path.join(dir, 'applications')
+    if os.path.exists(desktop_dir):
+        for file in os.listdir(desktop_dir):
+            if file.endswith('.desktop'):
+                desktop_files.append(os.path.join(desktop_dir, file))
+
+
+if __name__ == '__main__':
+    menu = Menu()
+    for file in desktop_files:
+        entry = MenuEntry(file)
+        if entry.name not in blacklist:
+            menu.add(entry)
+    menu.show()

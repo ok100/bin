@@ -1,0 +1,7 @@
+#!/bin/sh
+
+while :; do rulc -l && break; done  # Wait until ruld is running
+
+urxvt -title ranger -e ranger &
+urxvt -title irc -e shell &
+urxvt -title mutt -e mutt &

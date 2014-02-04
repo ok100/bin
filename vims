@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if ps aux | grep "[0-9] vim --servername VIM" > /dev/null; then
+	vim --remote-tab-silent "$@"
+else
+	urxvt -title vim-server -e vim --servername VIM "$@"
+fi

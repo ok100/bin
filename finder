@@ -1,0 +1,7 @@
+#!/bin/sh
+
+SEARCH=$(: | dmenu -p finder -nb "#1D1F21" -nf "#C5C8C6" -sb "#1D1F21" -sf "#C5C8C6")
+[[ -z "$SEARCH" ]] && exit
+SELECTED=$(locate -i -e -r "$SEARCH" | dmenu -i -l 10 -p "finder")
+[[ -z "$SELECTED" ]] && exit
+rifle "$SELECTED"

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+[ "$(xwininfo -tree -id $(XQueryPointer) | grep xwininfo | awk '{ print $5; }')" = "\"bspwm\"" ] && mygtkmenu-xdg

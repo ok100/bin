@@ -1,0 +1,9 @@
+#!/bin/sh
+
+dwb_uri=$1
+dwb_output=$2
+dwb_cookies=$3
+
+dst=$(zenity --file-selection --save --confirm-overwrite --filename="$dwb_output")
+
+[ -n "$dst" ] && urxvt -name wget -e wget --no-use-server-timestamps "$dwb_uri" -O "$dst" --load-cookies "$dwb_cookies"

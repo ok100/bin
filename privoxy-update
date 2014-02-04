@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sudo blocklist-to-privoxy -o /etc/privoxy/fanboy.action http://www.fanboy.co.nz/adblock/opera/urlfilter.ini
+sudo blocklist-to-privoxy -o /etc/privoxy/fanboy-czech.action https://secure.fanboy.co.nz/adblock/opera/cz/urlfilter.ini

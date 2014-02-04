@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cmd=$(echo -e "shutdown\nreboot" | dmenu -nb "#1D1F21" -nf "#707880" -sb "#1D1F21" -sf "#C5C8C6")
+
+case $cmd in
+	shutdown)  sudo poweroff ;;
+	reboot)    sudo reboot ;;
+esac

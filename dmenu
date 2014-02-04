@@ -1,0 +1,20 @@
+#!/bin/sh
+# dmenu wrapper, assing some options
+# if they weren't given.
+#
+# TODO: integrate with monsterwm,
+# maybe make monsterwm output some of it's
+# settings as enviroiment variables?
+main() {
+   local ARGS=
+   local FONT=
+   [[ "$@" != *-fn ]] && FONT="DejaVu Sans Mono-9:normal"
+   [[ "$@" != *-nb ]] && ARGS="$ARGS -nb #282A2E"
+   [[ "$@" != *-nf ]] && ARGS="$ARGS -nf #C5C8C6"
+   [[ "$@" != *-sb ]] && ARGS="$ARGS -sb #C5C8C6"
+   [[ "$@" != *-sf ]] && ARGS="$ARGS -sf #282A2E"
+   [[ -n "$FONT" ]] && {
+      /usr/bin/dmenu -fn "$FONT" $ARGS "$@"; return;
+   } || { /usr/bin/dmenu $ARGS "$@"; return; }
+}
+main "$@"
