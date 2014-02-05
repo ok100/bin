@@ -1,7 +1,8 @@
 #!/bin/sh
 
-while :; do rulc -l && break; done  # Wait until ruld is running
+# Wait for window rules
+while :; do [ -n "$(bspc rule -l)" ] && break; done
 
-urxvt -title ranger -e ranger &
-urxvt -title irc -e shell &
-urxvt -title mutt -e mutt &
+urxvt -name ranger -e ranger &
+urxvt -name irc -e shell &
+urxvt -name mutt -e mutt &
